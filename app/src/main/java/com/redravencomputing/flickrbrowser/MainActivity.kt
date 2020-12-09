@@ -10,8 +10,6 @@ import com.redravencomputing.flickrbrowser.databinding.ActivityMainBinding
 private const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity() {
-
-
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
