@@ -1,4 +1,4 @@
-package com.redravencomputing.flickrbrowser
+package com.redravencomputing.flickrbrowser.coroutineAsyncTask
 
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
@@ -15,22 +15,31 @@ abstract class CoroutineAsyncTask<Params, Progress, Result> {
         FINISHED
     }
 
-    var status: Status = Status.PENDING
+    private var status: Status = Status.PENDING
     abstract fun doInBackground(vararg params: Params?): Result
+    @Suppress("UNUSED")
     open fun onProgressUpdate(vararg values: Progress?) {}
+    @Suppress("UNUSED")
     open fun onPostExecute(result: Result?) {}
+    @Suppress("UNUSED")
     open fun onPreExecute() {}
+    @Suppress("UNUSED")
     open fun onCancelled(result: Result?) {}
-    protected var isCancelled = false
+    private var isCancelled = false
 
     fun execute(vararg params: Params){
 
         if (status != Status.PENDING) {
             when (status) {
                 Status.RUNNING -> throw IllegalStateException("Cannot execute task:" + " the task is already running.")
-                Status.FINISHED -> throw IllegalStateException("Cannot execute task:"
-                        + " the task has already been executed "
-                        + "(a task can be executed only once)")
+                Status.FINISHED -> throw IllegalStateException(
+                    "Cannot execute task:"
+                            + " the task has already been executed "
+                            + "(a task can be executed only once)"
+                )
+                else -> {
+                    //Do Nothing
+                }
             }
         }
 
@@ -47,22 +56,23 @@ abstract class CoroutineAsyncTask<Params, Progress, Result> {
             status = Status.FINISHED
             withContext(Dispatchers.Main){
                 // onPostExecute works on main thread to show output
-                Log.d("Alpha","after do in back "+status.name+"--"+isCancelled)
+                Log.d("Alpha", "after do in back " + status.name + "--" + isCancelled)
                 if (!isCancelled){onPostExecute(result)}
             }
         }
     }
 
-    fun cancel(mayInterruptIfRunning : Boolean){
+    fun cancel(@Suppress("UNUSED_PARAMETER")mayInterruptIfRunning: Boolean){
         isCancelled = true
         status = Status.FINISHED
         GlobalScope.launch(Dispatchers.Main){
             // onPostExecute works on main thread to show output
-            Log.d("Alpha","after cancel "+status.name+"--"+isCancelled)
+            Log.d("Alpha", "after cancel " + status.name + "--" + isCancelled)
             onPostExecute(null)
         }
     }
 
+    @Suppress("UNUSED")
     fun publishProgress(vararg progress: Progress) {
         //need to update main thread
         GlobalScope.launch(Dispatchers.Main){
