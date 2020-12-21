@@ -9,7 +9,7 @@ import com.redravencomputing.flickrbrowser.databinding.ActivityMainBinding
 
 private const val TAG = "MainActivity"
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), GetRawData.OnDownloadComplete {
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,7 +19,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(findViewById(R.id.toolbar))
 
-        val getRawData = GetRawData()
+        val getRawData = GetRawData(this)
+//        getRawData.setDownloadCompleteListener(this)
         getRawData.execute("https://www.flickr.com/services/feeds/photos_public.gne?tags=android,oreo&format=json&nojsoncallback=1")
 
 //        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
@@ -51,7 +52,7 @@ class MainActivity : AppCompatActivity() {
 //        private const val TAG = "MainActivity"
 //    }
 
-    fun onDownloadComplete(data: String, status: DownloadStatus) {
+    override fun onDownloadComplete(data: String, status: DownloadStatus) {
         if (status == DownloadStatus.OK) {
             Log.d(TAG, "onDownloadComplete called, data is $data")
         } else {
