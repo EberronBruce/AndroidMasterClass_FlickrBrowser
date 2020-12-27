@@ -7,9 +7,9 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.redravencomputing.flickrbrowser.databinding.ActivityMainBinding
 
-private const val TAG = "MainActivity"
+private const val TAG = "FlickrMainActivity"
 
-class MainActivity : AppCompatActivity(), GetRawData.OnDownloadComplete {
+class MainActivity : AppCompatActivity(), GetRawData.OnDownloadComplete, GetFlickrJsonData.OnDataAvailable {
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,13 +20,8 @@ class MainActivity : AppCompatActivity(), GetRawData.OnDownloadComplete {
         setSupportActionBar(findViewById(R.id.toolbar))
 
         val getRawData = GetRawData(this)
-//        getRawData.setDownloadCompleteListener(this)
         getRawData.execute("https://www.flickr.com/services/feeds/photos_public.gne?tags=android,oreo&format=json&nojsoncallback=1")
 
-//        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
-//            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                    .setAction("Action", null).show()
-//        }
         Log.d(TAG, "onCreate ends")
     }
 
@@ -54,10 +49,23 @@ class MainActivity : AppCompatActivity(), GetRawData.OnDownloadComplete {
 
     override fun onDownloadComplete(data: String, status: DownloadStatus) {
         if (status == DownloadStatus.OK) {
-            Log.d(TAG, "onDownloadComplete called, data is $data")
+            Log.d(TAG, "onDownloadComplete called")
+
+            val getFlickrJsonData = GetFlickrJsonData(this)
+            getFlickrJsonData.execute(data)
         } else {
             //download failed
             Log.d(TAG, "onDownloadComplete failed with status $status. Error message is: $data")
         }
+    }
+
+    override fun onDataAvailable(data: List<Photo>) {
+        Log.d(TAG, ".OnDataAvailable called, data is $data")
+
+        Log.d(TAG, ".onDataAvailable ends")
+    }
+
+    override fun onError(exception: Exception) {
+        Log.e(TAG, "onError called with ${exception.message}")
     }
 }
