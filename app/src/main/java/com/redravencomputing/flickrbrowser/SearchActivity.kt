@@ -10,6 +10,6 @@ class SearchActivity : AppCompatActivity() {
         setContentView(R.layout.activity_search)
         setSupportActionBar(findViewById(R.id.toolbar))
 
-
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 }

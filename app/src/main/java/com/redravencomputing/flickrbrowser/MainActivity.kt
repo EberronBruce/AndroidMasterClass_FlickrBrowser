@@ -6,12 +6,15 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.redravencomputing.flickrbrowser.databinding.ActivityMainBinding
 
 private const val TAG = "FlickrMainActivity"
 
 class MainActivity : AppCompatActivity(), GetRawData.OnDownloadComplete, GetFlickrJsonData.OnDataAvailable {
     private lateinit var binding: ActivityMainBinding
+    private val flickrRecyclerViewAdapter = FlickrRecyclerViewAdapter(ArrayList())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate called")
@@ -19,6 +22,10 @@ class MainActivity : AppCompatActivity(), GetRawData.OnDownloadComplete, GetFlic
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(findViewById(R.id.toolbar))
+
+        val recycler_view = findViewById<RecyclerView>(R.id.recycler_view)
+        recycler_view.layoutManager = LinearLayoutManager(this)
+        recycler_view.adapter = flickrRecyclerViewAdapter
 
         val url = createUri("https://www.flickr.com/services/feeds/photos_public.gne", "android, oreo", "en-us", true)
         Log.d(TAG, "This is the url: $url")
@@ -79,8 +86,8 @@ class MainActivity : AppCompatActivity(), GetRawData.OnDownloadComplete, GetFlic
     }
 
     override fun onDataAvailable(data: List<Photo>) {
-        Log.d(TAG, ".OnDataAvailable called, data is $data")
-
+        Log.d(TAG, ".OnDataAvailable called")
+        flickrRecyclerViewAdapter.loadNewData(data)
         Log.d(TAG, ".onDataAvailable ends")
     }
 
