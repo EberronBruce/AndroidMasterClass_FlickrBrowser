@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity(), GetRawData.OnDownloadComplete,
         Log.d(TAG, "onCreate ends")
     }
 
-    override fun OnItemClick(view: View, position: Int) {
+    override fun onItemClick(view: View, position: Int) {
         Log.d(TAG, ".onItemClick: starts")
         Toast.makeText(this, "Normal tap at position: $position", Toast.LENGTH_SHORT).show()
     }
