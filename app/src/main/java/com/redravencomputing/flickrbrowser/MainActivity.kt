@@ -1,5 +1,6 @@
 package com.redravencomputing.flickrbrowser
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -7,14 +8,13 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.redravencomputing.flickrbrowser.databinding.ActivityMainBinding
 
 private const val TAG = "FlickrMainActivity"
 
-class MainActivity : AppCompatActivity(), GetRawData.OnDownloadComplete,
+class MainActivity : BaseActivity(), GetRawData.OnDownloadComplete,
     GetFlickrJsonData.OnDataAvailable,
     RecyclerItemClickListener.OnRecyclerClickListener {
 
@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity(), GetRawData.OnDownloadComplete,
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setSupportActionBar(findViewById(R.id.toolbar))
+        activateToolbar(false)
 
         val recycler_view = findViewById<RecyclerView>(R.id.recycler_view)
         recycler_view.layoutManager = LinearLayoutManager(this)
@@ -49,7 +49,13 @@ class MainActivity : AppCompatActivity(), GetRawData.OnDownloadComplete,
 
     override fun onItemLongClick(view: View, position: Int) {
         Log.d(TAG, ".onItemLongClick: starts")
-        Toast.makeText(this, "Long tap at position $position", Toast.LENGTH_SHORT).show()
+//        Toast.makeText(this, "Long tap at position $position", Toast.LENGTH_SHORT).show()
+        val photo = flickrRecyclerViewAdapter.getPhoto(position)
+        if(photo != null) {
+            val intent = Intent(this, PhotoDetailsActivity::class.java)
+            intent.putExtra(PHOTO_TRANSFER, photo)
+            startActivity(intent)
+        }
     }
 
     private fun createUri(baseUrl: String, searchCriteria: String, lang: String, matchAll: Boolean) : String {
